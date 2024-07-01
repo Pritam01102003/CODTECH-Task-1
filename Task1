@@ -1,0 +1,51 @@
+#include <LiquidCrystal.h>
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2; 
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7); 
+
+float celsius;
+int temp = A1;
+int potentiometer = A0; // Pin connected to the potentiometer
+
+void setup() {
+  lcd.begin(16, 2);
+  pinMode(temp, INPUT);
+  pinMode(potentiometer, INPUT);
+  Serial.begin(9600); // Initialize serial communication
+  randomSeed(analogRead(0)); // Seed the random number generator
+}
+
+void loop() {
+  // Read temperature from thermistor and add a small random variation
+  celsius = analogRead(temp) * 0.004882814;
+  celsius = (celsius - 0.5) * 100.0;
+  celsius += random(-2, 3) * 0.1; // Add a small random variation
+
+  // Read value from the potentiometer and add a small random variation
+  float potentiometerValue = analogRead(potentiometer) * 0.004882814;
+  float humidity = potentiometerValue * 100.0; // Convert to percentage (0-100%)
+  humidity += random(-2, 3) * 0.1; // Add a small random variation
+
+  // Display temperature on LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(celsius);
+  lcd.print(" C");
+
+  // Display humidity on LCD
+  lcd.setCursor(0, 1);
+  lcd.print("Humidity: ");
+  lcd.print(humidity);
+  lcd.print(" %");
+
+  // Print values to Serial Monitor
+  Serial.print("Temperature: ");
+  Serial.print(celsius);
+  Serial.println(" C");
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.println(" %");
+
+  delay(2000); // Wait for 2 seconds before updating the display
+  lcd.clear();
+}
